@@ -1,0 +1,55 @@
+services:
+  backend:
+    container_name: aiml-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aiml-backend
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        # DB 정상 작동시 까지 기다림
+        condition: service_healthy
+    networks:
+      - db_network
+
+  db:
+    image: mysql:8.0
+    container_name: aiml-db
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+      TZ: Asia/Seoul
+#      MYSQL_USER: ${DB_USERNAME}
+#      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - db_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword" ]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+
+networks:
+  db_network:
+
+volumes:
+  mysql-data:
+
+#  nginx:
+#    image: nginx
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx/conf.d:/etc/nginx/conf.d
+#    depends_on:
+#      - app
