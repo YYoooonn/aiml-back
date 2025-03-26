@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: backend
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATA_SOURCE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+  cloud:
+    aws:
+      s3:
+        bucket: ${BUCKET_NAME}
+#        stack:
+#          auto: false
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+frontend:
+  origin: ${FRONTEND_ORIGIN}
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
